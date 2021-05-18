@@ -2,10 +2,10 @@ import io
 import json
 import logging
 import sys
-
-from fdk import response
-
 import oci
+from fdk import response
+from oci.config import validate_config
+
 
 def handler(ctx, data: io.BytesIO = None):
     name = "World"
@@ -23,7 +23,7 @@ def handler(ctx, data: io.BytesIO = None):
                 value = base64.b64decode(value).decode('UTF-8')
             oci_config[key] = value
 
-    from oci.config import validate_config
+
     validate_config(oci_config)
 
     catalog_client = oci.data_catalog.DataCatalogClient(oci_config)
