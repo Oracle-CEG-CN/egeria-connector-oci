@@ -2,10 +2,11 @@ import io
 import json
 import logging
 import sys
-
+import oci
 from fdk import response
 
-import oci
+from oci.config import validate_config
+
 
 def get_oci_config(env):
     '''
@@ -43,7 +44,6 @@ def handler(ctx, data: io.BytesIO = None):
         "python_version": sys.version_info,
     }
         
-    from oci.config import validate_config
     try:
         validate_config(oci_config)
         try:
