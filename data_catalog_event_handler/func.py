@@ -25,12 +25,47 @@ def get_oci_config(env):
 
     return result
 
-def do_catalog_job(catalog_client):
+def do_catalog_job(data_catalog_client, compartment_id, data_catalog_id):
     '''
     '''
-    catalogs = catalog_client.list_catalogs('ocid1.compartment.oc1..aaaaaaaa7kjb236ds44lcucrwdnhybwtr26tntrwwxdlkdrzpxekl4swsjiq').data
+    catalogs = data_catalog_client.list_catalogs(compartment_id).data
     for catalog_summary in catalogs:
         logging.debug('id: %s: %s' % (catalog_summary.id, catalog_summary.display_name))
+
+
+def handle_harvest_end(event, oci_config):
+    '''
+    Handler function for harvest-end event.
+    :param event the event object containing additional information in its 'data' member
+    :param oci_config configuration used to create a DataCatalogClient instance.
+    '''
+    data_catalog_client = oci.data_catalog.DataCatalogClient(oci_config)
+    event_data = event["data"]
+    compartment_id = event_data["compartmentId"]
+    data_catalog_id = event_data["resourceId"]
+    do_catalog_job(data_catalog_client, compartment_id, data_catalog_id)
+
+ROUTING = {
+    "com.oraclecloud.datacatalog.harvestjob.end": handle_harvest_end
+}
+
+def route_event(event, oci_config):
+    '''
+    Used to route events based on the 'eventType' member of the given 'event'.
+    :param event the event for which to route to our specific handler function
+    :param oci_config configuration to create the appropriate Oracle Cloud Infrastructure client.
+    '''
+    event_type = event['eventType']
+    try:
+        handler = ROUTING[event_type]
+    except KeyError as key_error:
+        raise Exception('No routing for eventType %s available.' % (eventType)) from key_error
+
+    try:
+        handler(event, oci_config)
+    except Exception as handler_error:
+        raise Exception('Error handling event for eventType %s.' % (eventType)) from handler_error
+    
 
 def handler(ctx, data: io.BytesIO = None):
     '''
@@ -47,15 +82,26 @@ def handler(ctx, data: io.BytesIO = None):
     }
         
     try:
-        validate_config(oci_config)
         try:
-            do_catalog_job(oci.data_catalog.DataCatalogClient(oci_config))
-        except Exception as catalog_job_exception:
-            logging.error('Error during catalog job.', exc_info=catalog_job_exception)
+            validate_config(oci_config)
+        except Exception as validate_config_error:
+            raise Exception('Error validating oci_config.') from validate_config_error
 
-    except Exception as config_validation_exception:
+        if data != None:
+            try:
+                received_event = json.loads(data.getvalue())
+            except Exception as json_loads_error:
+                raise Exception('Error parsing request data: %s.' % (data.getvalue())) from json_loads_error
+
+            try:
+                route_event(received_event, oci_config)
+            except Exception as route_event_error:
+                raise Exception('Error while handling event.') from route_event_error
+
+
+    except Exception as e:
         response_json['error'] = str(e)
-        logging.error('Error during oci config validation.', exc_info=config_validation_exception)
+        logging.error('Error while calling handler.', exc_info=e)
 
 
     return response.Response(
