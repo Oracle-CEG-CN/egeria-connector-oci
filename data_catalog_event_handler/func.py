@@ -48,12 +48,12 @@ def handler(ctx, data: io.BytesIO = None):
         validate_config(oci_config)
         try:
             do_catalog_job(oci.data_catalog.DataCatalogClient(oci_config))
-        except Exception as cje:
-            logging.error('Error during catalog job', cje)
+        except Exception as catalog_job_exception:
+            logging.error('Error during catalog job.', exc_info=catalog_job_exception)
 
-    except Exception as e:
+    except Exception as config_validation_exception:
         response_json['error'] = str(e)
-        logging.error('Error during config validation', e)
+        logging.error('Error during oci config validation.', exc_info=config_validation_exception)
 
 
     return response.Response(
