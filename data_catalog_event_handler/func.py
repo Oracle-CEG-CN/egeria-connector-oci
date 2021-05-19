@@ -28,7 +28,9 @@ def get_oci_config(env):
 def do_catalog_job(catalog_client):
     '''
     '''
-    pass
+    catalogs = catalog_client.list_catalogs('ocid1.compartment.oc1..aaaaaaaa7kjb236ds44lcucrwdnhybwtr26tntrwwxdlkdrzpxekl4swsjiq').data
+    for catalog_summary in catalogs:
+        logging.debug('id: %s: %s' % (catalog_summary.id, catalog_summary.display_name))
 
 def handler(ctx, data: io.BytesIO = None):
     '''
