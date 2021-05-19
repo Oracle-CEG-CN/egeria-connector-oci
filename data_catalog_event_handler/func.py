@@ -3,6 +3,9 @@ import json
 import logging
 import sys
 import oci
+import requests
+import yaml
+
 from fdk import response
 
 from oci.config import validate_config
@@ -14,16 +17,23 @@ def get_oci_config(env):
     '''
     result = {}
 
-    for key in ['user', 'tenancy', 'region', 'key_content', 'fingerprint']:
-        env_key = 'oci_config_%s' % key
-        if env_key in env:
-            value = env[env_key]
-            if key == 'key_content':
-                import base64
-                value = base64.b64decode(value).decode('UTF-8')
-            result[key] = value
+    try:
+        config_url = env['data_catalog_event_handler_config_url']
+    except KeyError as missing_config_url:
+        raise Exception('Missing configuration parameter ''data_catalog_event_handler_config_url''') from missing_config_url
+
+    try:
+        config_response = requests.get(config_url)
+        if config_response.status_code == 200:
+            logging.info('Got configuration data from %s.' % config_url)
+            app_config = yaml.unsafe_load(io.StringIO(config_response.text))
+            logging.debug('read app_config: %s' % (json.dumps(app_config)))
+            result = app_config['oci_conf']
+    except Exception as read_config_error:
+        raise Exception('Error reading app config.') from read_config_error
 
     return result
+        
 
 def do_catalog_job(data_catalog_client, compartment_id, data_catalog_id):
     '''
