@@ -6,10 +6,14 @@ Egeria and OCD metadata types. As of the [Open Metadata Repository Connector Imp
 This mapping as based on the [Egeria Metadata Model](https://egeria.odpi.org/open-metadata-implementation/repository-services/docs/metadata-meta-model.html) and the [Oracle Data Catalog Types](https://docs.oracle.com/en-us/iaas/api/#/en/data-catalog/20190325/).
 
 
-|Egeria Type   |ODC Type|Comments|
-|--------------|--------|--------|
-|Entity        |        |        |
-|Relationship  |        |        |
-|Classification|        |        |
-|Glossary      |        |        |
-|GlossaryTerm  |        |        |
+|Egeria Type         |ODC Type            |Comments            |Examples            |
+|--------------------|--------------------|--------------------|--------------------|
+|                    |Data Asset          |                    |database, filesystem|
+|                    |Folder              |                    |DB schema, directory|
+|Entity              |Entity              |                    |Table, File         |
+|                    |Attribute           |                    |Column, ...         |
+|Relationship        |                    |                    |                    |
+|Classification      |                    |                    |                    |
+|Glossary            |Glossary            |                    |                    |
+|GlossaryTerm        |Term                |                    |                    |
+
