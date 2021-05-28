@@ -41,16 +41,5 @@ public class OracleDataCatalogOMRSRepositoryConnector
         return new DataCatalogClient(provider);
     }
 
-
-    @Override
-    public void initialize(
-            final String connectorInstanceId,
-            final ConnectionProperties connectionProperties) {
-    }
-
-    @Override
-    public void setMetadataCollectionId(final String metadataCollectionId) {
-        super.setMetadataCollectionId(metadataCollectionId);
-    }
 }
 
