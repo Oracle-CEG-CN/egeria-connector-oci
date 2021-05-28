@@ -2,39 +2,43 @@ package oracle.odpi.egeria.datacatalog.connector;
 
 import java.util.Map;
 
+import java.io.IOException;
+
 import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperties;
 
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryConnector;
 
+import com.oracle.bmc.ConfigFileReader;
 import com.oracle.bmc.Region;
+
+import com.oracle.bmc.auth.AuthenticationDetailsProvider;
+import com.oracle.bmc.auth.SimplePrivateKeySupplier;
 
 import com.oracle.bmc.datacatalog.DataCatalogClient;
 
 import com.oracle.bmc.auth.SimpleAuthenticationDetailsProvider;
 
-public class OracleDataCatalogOMRSRepositoryConnector extends OMRSRepositoryConnector {
-
-    private static final String OCI_CONFIG_USER_ID = "oci-config-user-id";
-    private static final String OCI_CONFIG_TENANT_ID = "oci-config-tenant-id";
-    private static final String OCI_CONFIG_FINGERPRINT = "oci-config-fingerprint";
-    private static final String OCI_CONFIG_REGION = "oci-config-region";
+public class OracleDataCatalogOMRSRepositoryConnector
+        extends OMRSRepositoryConnector {
 
     private DataCatalogClient dataCatalogClient;
 
+    private static final DataCatalogClient createFromDefaultConfig()
+            throws IOException {
+        ConfigFileReader.ConfigFile config = ConfigFileReader.parseDefault();
 
-    private static final DataCatalogClient createFromConnectionProperties(
-            final ConnectionProperties connectionProperties) {
-        Map<String, Object> connectionConfigurationProperties = connectionProperties.getConfigurationProperties();
-        SimpleAuthenticationDetailsProvider authenticationDetailsProvider;
+        SimplePrivateKeySupplier privateKeySupplier
+                = new SimplePrivateKeySupplier(config.get("key_file"));
 
-        authenticationDetailsProvider = SimpleAuthenticationDetailsProvider.builder()
-            .userId((String) connectionConfigurationProperties.get(OCI_CONFIG_USER_ID))
-            .tenantId((String) connectionConfigurationProperties.get(OCI_CONFIG_TENANT_ID))
-            .region(Region.fromRegionCodeOrId((String) connectionConfigurationProperties.get(OCI_CONFIG_REGION)))
-            .fingerprint((String) connectionConfigurationProperties.get(OCI_CONFIG_FINGERPRINT))
-            .build();
+        AuthenticationDetailsProvider provider
+                = SimpleAuthenticationDetailsProvider.builder()
+                    .tenantId(config.get("tenancy"))
+                    .userId(config.get("user"))
+                    .fingerprint(config.get("fingerprint"))
+                    .privateKeySupplier(privateKeySupplier)
+                    .build();
 
-        return null;
+        return new DataCatalogClient(provider);
     }
 
 
