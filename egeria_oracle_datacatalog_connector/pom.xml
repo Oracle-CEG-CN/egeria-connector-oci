@@ -12,7 +12,7 @@
 
     <encoding>UTF-8</encoding>
 
-    <open-metadata.version>2.9</open-metadata.version>
+    <open-metadata.version>2.11</open-metadata.version>
     <oci-java-sdk.version>1.37.0</oci-java-sdk.version>
   </properties>
      
