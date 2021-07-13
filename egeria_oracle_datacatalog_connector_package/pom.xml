@@ -10,8 +10,8 @@
  
     <dependencies>
         <dependency>
-			<groupId>oracle.odpi.egeria.datacatalog.connector</groupId>
-			<artifactId>egeria-datacatalog-connector</artifactId>
+            <groupId>oracle.odpi.egeria.datacatalog.connector</groupId>
+            <artifactId>egeria-datacatalog-connector</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -34,8 +34,20 @@
                                 <includes>
                                     <include>oracle.odpi.egeria.datacatalog.connector:egeria-datacatalog-connector</include>
                                     <include>com.oracle.oci.sdk:oci-java-sdk-datacatalog</include>
+                    <!--
+                    -->
                                 </includes>
                             </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                            </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
