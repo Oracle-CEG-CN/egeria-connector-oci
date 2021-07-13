@@ -1,4 +1,7 @@
 
 **/target
 **/.sources
-
+*.log
+dependency-reduced-pom.xml
+__pycache__
+egeria_oracle_datacatalog_connector_run/data/
