@@ -23,7 +23,8 @@ import org.slf4j.LoggerFactory;
  */
 public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollectionBase {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(OracleDataCatalogOMRSMetadataCollection.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+			OracleDataCatalogOMRSMetadataCollection.class);
 	
 	public OracleDataCatalogOMRSMetadataCollection(
 			OMRSRepositoryConnector parentConnector,
@@ -31,20 +32,21 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
 			OMRSRepositoryHelper repositoryHelper,
 			OMRSRepositoryValidator repositoryValidator,
 			String metadataCollectionId) {
-		super(parentConnector, repositoryName, repositoryHelper, repositoryValidator, metadataCollectionId);
+		super(parentConnector, repositoryName, repositoryHelper,
+				repositoryValidator, metadataCollectionId);
 	}
 	
 	@Override
 	public boolean verifyTypeDef(final String userId, final TypeDef typeDef)
 			throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefConflictException, InvalidTypeDefException, UserNotAuthorizedException {
-		LOGGER.debug("verifyTypeDef({}, {})", userId, typeDef.getDescription());
+		LOGGER.debug("verifyTypeDef({}, {})", userId, typeDef.toString());
 		return false;
 	}
 	
 	@Override
 	public void addTypeDef(final String userId, final TypeDef typeDef)
 			throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefKnownException, TypeDefConflictException, InvalidTypeDefException, FunctionNotSupportedException, UserNotAuthorizedException {
-		LOGGER.debug("addTypeDef({}, {})", userId, typeDef.getDescription());
+		LOGGER.debug("addTypeDef({}, {} - {})", userId, typeDef.getCategory().getName(), typeDef.getName());
 		throw new TypeDefNotSupportedException(
 			new ExceptionMessageDefinition(400, "typenotsupported", "template", "ignore me", "ignore me"),
 			OracleDataCatalogOMRSMetadataCollection.class.getName(),
@@ -56,13 +58,16 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
 			final String userId,
 			final AttributeTypeDef attributeTypeDef)
 			throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefConflictException, InvalidTypeDefException, UserNotAuthorizedException {
-		LOGGER.debug("verifyAttributeTypeDef({}, {})", userId, attributeTypeDef.getDescription());
+		LOGGER.debug("verifyAttributeTypeDef({}, {} - {})", userId, attributeTypeDef.getCategory().getName(), attributeTypeDef.getName());
 		return false;
 	}
 
 	@Override
 	public void addAttributeTypeDef(String userId, AttributeTypeDef newAttributeTypeDef) throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefKnownException, TypeDefConflictException, InvalidTypeDefException, FunctionNotSupportedException, UserNotAuthorizedException {
-		LOGGER.debug("addAttributeTypeDef({}, {})", userId, newAttributeTypeDef.getDescription());
+		LOGGER.debug("addAttributeTypeDef({}, {} - {})",
+				userId,
+				newAttributeTypeDef.getCategory().getName(),
+				newAttributeTypeDef.getName());
 		throw new TypeDefNotSupportedException(
 			new ExceptionMessageDefinition(400, "attributetypedefnotsupported", "template", "ignore me", "ignore me"),
 			OracleDataCatalogOMRSMetadataCollection.class.getName(),
