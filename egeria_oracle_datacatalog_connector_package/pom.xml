@@ -32,10 +32,55 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <!--
+                                    -   The following list of dependencies to include has been identified using:
+                                    -   mvn dependency:tree
+                                    -   on this project
+                                    -->
                                     <include>oracle.odpi.egeria.datacatalog.connector:egeria-datacatalog-connector</include>
                                     <include>com.oracle.oci.sdk:oci-java-sdk-datacatalog</include>
-                    <!--
-                    -->
+                                    <include>com.oracle.oci.sdk:oci-java-sdk-common</include>
+                                    <include>com.google.guava:guava</include>
+                                    <include>com.google.guava:failureaccess</include>
+                                    <include>com.google.guava:listenablefuture</include>
+                                    <include>org.checkerframework:checker-qual</include>
+                                    <include>com.google.errorprone:error_prone_annotations</include>
+                                    <include>com.google.j2objc:j2objc-annotations</include>
+                                    <include>commons-codec:commons-codec</include>
+                                    <include>commons-io:commons-io</include>
+                                    <include>org.apache.commons:commons-lang3</include>
+                                    <include>com.google.code.findbugs:jsr305</include>
+                                    <include>com.fasterxml.jackson.datatype:jackson-datatype-jsr310</include>
+                                    <include>com.fasterxml.jackson.datatype:jackson-datatype-jdk8</include>
+                                    <include>org.glassfish.jersey.core:jersey-client</include>
+                                    <include>org.glassfish.jersey.core:jersey-common</include>
+                                    <include>jakarta.annotation:jakarta.annotation-api</include>
+                                    <include>org.glassfish.hk2:osgi-resource-locator</include>
+                                    <include>org.glassfish.hk2.external:jakarta.inject</include>
+                                    <include>org.glassfish.jersey.inject:jersey-hk2</include>
+                                    <include>org.glassfish.hk2:hk2-locator</include>
+                                    <include>org.glassfish.hk2.external:aopalliance-repackaged</include>
+                                    <include>org.glassfish.hk2:hk2-api</include>
+                                    <include>org.glassfish.hk2:hk2-utils</include>
+                                    <include>org.javassist:javassist</include>
+                                    <include>org.glassfish.jersey.media:jersey-media-json-jackson</include>
+                                    <include>org.glassfish.jersey.ext:jersey-entity-filtering</include>
+                                    <include>com.fasterxml.jackson.module:jackson-module-jaxb-annotations</include>
+                                    <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
+                                    <include>jakarta.activation:jakarta.activation-api</include>
+                                    <include>org.bouncycastle:bcpkix-jdk15on</include>
+                                    <include>org.bouncycastle:bcprov-jdk15on</include>
+                                    <include>com.nimbusds:nimbus-jose-jwt</include>
+                                    <include>com.github.stephenc.jcip:jcip-annotations</include>
+                                    <include>net.minidev:json-smart</include>
+                                    <include>net.minidev:accessors-smart</include>
+                                    <include>org.ow2.asm:asm</include>
+                                    <include>io.github.resilience4j:resilience4j-circuitbreaker</include>
+                                    <include>io.vavr:vavr</include>
+                                    <include>io.vavr:vavr-match</include>
+                                    <include>io.github.resilience4j:resilience4j-core</include>
+                                    <include>com.oracle.oci.sdk:oci-java-sdk-circuitbreaker</include>
+                                    <include>jakarta.ws.rs:jakarta.ws.rs-api</include>
                                 </includes>
                             </artifactSet>
                             <filters>

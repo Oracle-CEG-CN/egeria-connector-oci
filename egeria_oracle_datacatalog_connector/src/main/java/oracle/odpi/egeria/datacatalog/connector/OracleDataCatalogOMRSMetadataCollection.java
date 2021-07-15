@@ -26,27 +26,41 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
 	private static final Logger LOGGER = LoggerFactory.getLogger(
 			OracleDataCatalogOMRSMetadataCollection.class);
 	
+	private final OracleDataCatalogHelper oracleDataCatalogHelper;
+	
 	public OracleDataCatalogOMRSMetadataCollection(
 			OMRSRepositoryConnector parentConnector,
 			String repositoryName,
 			OMRSRepositoryHelper repositoryHelper,
 			OMRSRepositoryValidator repositoryValidator,
-			String metadataCollectionId) {
+			String metadataCollectionId,
+			final OracleDataCatalogHelper oracleDataCatalogHelper) {
 		super(parentConnector, repositoryName, repositoryHelper,
 				repositoryValidator, metadataCollectionId);
+		this.oracleDataCatalogHelper = oracleDataCatalogHelper;
 	}
 	
 	@Override
 	public boolean verifyTypeDef(final String userId, final TypeDef typeDef)
 			throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefConflictException, InvalidTypeDefException, UserNotAuthorizedException {
-		LOGGER.debug("verifyTypeDef({}, {})", userId, typeDef.toString());
-		return false;
+		LOGGER.debug("verifyTypeDef({}, {})", userId, typeDef.getName());
+		
+		return oracleDataCatalogHelper.isRegisteredType(typeDef);
 	}
 	
 	@Override
 	public void addTypeDef(final String userId, final TypeDef typeDef)
 			throws InvalidParameterException, RepositoryErrorException, TypeDefNotSupportedException, TypeDefKnownException, TypeDefConflictException, InvalidTypeDefException, FunctionNotSupportedException, UserNotAuthorizedException {
 		LOGGER.debug("addTypeDef({}, {} - {})", userId, typeDef.getCategory().getName(), typeDef.getName());
+		
+		switch (typeDef.getCategory()) {
+			case ENTITY_DEF:
+				if (oracleDataCatalogHelper.isSupportedEntityDef(typeDef.getName())) {
+					oracleDataCatalogHelper.registerTypeDef(typeDef);
+					return;
+				}
+				break;
+		}
 		throw new TypeDefNotSupportedException(
 			new ExceptionMessageDefinition(400, "typenotsupported", "template", "ignore me", "ignore me"),
 			OracleDataCatalogOMRSMetadataCollection.class.getName(),
