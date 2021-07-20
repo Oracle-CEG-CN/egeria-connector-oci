@@ -45,13 +45,14 @@ public class OracleDataCatalogHelperTest {
                 "OracleDataCatalogHelperTest",
                 omrsRepositoryHelper);
         oracleDataCatalogHelper.registerTypeDef(createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-Database", "Database"));
+        oracleDataCatalogHelper.registerTypeDef(createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-RelationalTableType", "RelationalTableType"));
         
         new Expectations() {{
             omrsRepositoryHelper.getTypeDef(anyString, "entityTypeGUID", "a", "getSupportedEntityTypeDefsFor");
             result = createTypeDef(TypeDefCategory.ENTITY_DEF, "a", "a_type");
             
             omrsRepositoryHelper.getSubTypesOf(anyString, "a_type");
-            result = Arrays.asList(new String[] {"aa_type", "ab_type", "ac_type", "ad_type", "DataBase"});
+            result = Arrays.asList(new String[] {"aa_type", "ab_type", "ac_type", "ad_type", "DataBase", "RelationalTableType"});
             
             omrsRepositoryHelper.getTypeDefByName("", "aa_type");
             result = createTypeDef(TypeDefCategory.ENTITY_DEF, "aa", "aa_type");
@@ -63,6 +64,8 @@ public class OracleDataCatalogHelperTest {
             result = createTypeDef(TypeDefCategory.ENTITY_DEF, "ad", "ad_type");
             omrsRepositoryHelper.getTypeDefByName("", "DataBase");
             result = createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-Database", "Database");
+            omrsRepositoryHelper.getTypeDefByName("", "RelationalTableType");
+            result = createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-RelationalTableType", "RelationalTableType");
             
         }};
     }
@@ -73,10 +76,25 @@ public class OracleDataCatalogHelperTest {
         List<TypeDef> result = oracleDataCatalogHelper.getSupportedEntityTypeDefsFor(
                 "a", null);
         assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
+        TypeDef resultTypeDef;
+        resultTypeDef = result.get(0);
+        assertThat(resultTypeDef).isNotNull();
+        assertThat(resultTypeDef.getName()).isEqualTo("Database");
+        resultTypeDef = result.get(1);
+        assertThat(resultTypeDef).isNotNull();
+        assertThat(resultTypeDef.getName()).isEqualTo("RelationalTableType");
+    }
+    
+    @Test
+    public void testGetSupportedEntityTypeDefsFor2() throws Exception {
+        List<TypeDef> result = oracleDataCatalogHelper.getSupportedEntityTypeDefsFor(
+                "a", Arrays.asList(new String[]{ "ab", "ac", "guid-RelationalTableType"}));
+        assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
         TypeDef resultTypeDef = result.get(0);
         assertThat(resultTypeDef).isNotNull();
-        assertThat(resultTypeDef.getName()).isEqualTo("Database");
+        assertThat(resultTypeDef.getName()).isEqualTo("RelationalTableType");
     }
     
 }
