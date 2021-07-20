@@ -1,7 +1,14 @@
 package oracle.odpi.egeria.datacatalog.connector;
 
+import java.util.Date;
+import java.util.List;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.OMRSMetadataCollectionBase;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.SequencingOrder;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.search.SearchClassifications;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.search.SearchProperties;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.AttributeTypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryConnector;
@@ -10,10 +17,13 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.FunctionNotSupportedException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.InvalidParameterException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.InvalidTypeDefException;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.PagingErrorException;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.PropertyErrorException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.RepositoryErrorException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeDefConflictException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeDefKnownException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeDefNotSupportedException;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeErrorException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.UserNotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,5 +98,44 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
 			"ignore me");
 	}
 
-	
+    @Override
+    public List<EntityDetail> findEntities(
+            final String                    userId,
+            final String                    entityTypeGUID,
+            final List<String>              entitySubtypeGUIDs,
+            final SearchProperties          matchProperties,
+            final int                       fromEntityElement,
+            final List<InstanceStatus>      limitResultsByStatus,
+            final SearchClassifications     matchClassifications,
+            final Date                      asOfTime,
+            final String                    sequencingProperty,
+            final SequencingOrder           sequencingOrder,
+            final int                       pageSize) throws InvalidParameterException,
+                    RepositoryErrorException,
+                    TypeErrorException,
+                    PropertyErrorException,
+                    PagingErrorException,
+                    FunctionNotSupportedException,
+                    UserNotAuthorizedException
+    {
+        final String  methodName                   = "findEntities";
+
+        /*
+         * Validate parameters
+         */
+        this.findEntitiesParameterValidation(userId,
+                                             entityTypeGUID,
+                                             entitySubtypeGUIDs,
+                                             matchProperties,
+                                             fromEntityElement,
+                                             limitResultsByStatus,
+                                             matchClassifications,
+                                             asOfTime,
+                                             sequencingProperty,
+                                             sequencingOrder,
+                                             pageSize);
+        
+        return null;
+    }
+    
 }

@@ -11,6 +11,7 @@ import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperti
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryConnector;
 
 import java.util.Map;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +110,7 @@ public class OracleDataCatalogOMRSRepositoryConnector
 		        repositoryHelper,
 		        repositoryValidator,
 		        metadataCollectionId,
-			new OracleDataCatalogHelper(dataCatalogClient, catalogId));
+			new OracleDataCatalogHelper(dataCatalogClient, catalogId, repositoryHelper));
 	}
     }
 
