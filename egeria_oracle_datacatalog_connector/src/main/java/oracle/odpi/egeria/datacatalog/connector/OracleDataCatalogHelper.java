@@ -70,6 +70,15 @@ public final class OracleDataCatalogHelper {
         return registeredTypeDefs.containsKey(typeDef.getGUID());
     }
     
+    /**
+     * This is a helper method to implement {@code OracleDataCatalogOMRSMetadataCollection#findEntities}.
+     * After calculating the result from the given parameters, the result is further limited to those
+     * {@code EntityDef}s which have been registered before.
+     * @param entityTypeGUID the <b>GUID</b> of the root of the type hierarchy, for which to search entities
+     * @param entitySubtypeGUIDs if provided: used to limit the subtypes to the given ones; if {@code null} or empty, it will be ignored.
+     * @return the list of supported {@code EntityDef} instances
+     * @throws TypeErrorException 
+     */
     public List<TypeDef> getSupportedEntityTypeDefsFor(
             final String                    entityTypeGUID,
             final List<String>              entitySubtypeGUIDs) throws TypeErrorException {
