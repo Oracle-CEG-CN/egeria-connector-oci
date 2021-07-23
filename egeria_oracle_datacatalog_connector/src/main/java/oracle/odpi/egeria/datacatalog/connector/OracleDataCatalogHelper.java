@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import oracle.odpi.egeria.datacatalog.connector.queries.DataAssetQuery;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQuery;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQueryContext;
 
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
@@ -27,6 +30,8 @@ public final class OracleDataCatalogHelper {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(
             OracleDataCatalogHelper.class);
+    
+    private static final Map<String, OracleDataCatalogQuery> typeDefName2QueryMap;
 
     private static final Set<String> supportedEntityDefNames;
 
@@ -36,6 +41,9 @@ public final class OracleDataCatalogHelper {
         supportedEntityDefNames.add("RelationalDBSchemaType");
         supportedEntityDefNames.add("RelationalTableType");
         supportedEntityDefNames.add("RelationalColumnType");
+        
+        typeDefName2QueryMap = new HashMap<>();
+        typeDefName2QueryMap.put("Database", new DataAssetQuery());
     }
 
     private final DataCatalogClient dataCatalogClient;
@@ -103,6 +111,14 @@ public final class OracleDataCatalogHelper {
         return result.stream()
                 .filter(t -> registeredTypeDefs.containsKey(t.getGUID()))
                 .collect(Collectors.toList());
+    }
+
+    public OracleDataCatalogQuery getQueryForEntityDef(final TypeDef typeDef) {
+        return typeDefName2QueryMap.get(typeDef.getName());
+    }
+    
+    public OracleDataCatalogQueryContext createQueryContext() {
+        return new OracleDataCatalogQueryContext(dataCatalogClient, catalogId);
     }
 
 }

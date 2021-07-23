@@ -1,7 +1,11 @@
 package oracle.odpi.egeria.datacatalog.connector;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQuery;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQueryContext;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.OMRSMetadataCollectionBase;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.SequencingOrder;
@@ -10,6 +14,7 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.search.SearchClassifications;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.search.SearchProperties;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.AttributeTypeDef;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.EntityDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryConnector;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
@@ -120,22 +125,40 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
     {
         final String  methodName                   = "findEntities";
 
-        /*
-         * Validate parameters
-         */
-        this.findEntitiesParameterValidation(userId,
-                                             entityTypeGUID,
-                                             entitySubtypeGUIDs,
-                                             matchProperties,
-                                             fromEntityElement,
-                                             limitResultsByStatus,
-                                             matchClassifications,
-                                             asOfTime,
-                                             sequencingProperty,
-                                             sequencingOrder,
-                                             pageSize);
+//        /*
+//         * Validate parameters
+//         */
+//        this.findEntitiesParameterValidation(userId,
+//                                             entityTypeGUID,
+//                                             entitySubtypeGUIDs,
+//                                             matchProperties,
+//                                             fromEntityElement,
+//                                             limitResultsByStatus,
+//                                             matchClassifications,
+//                                             asOfTime,
+//                                             sequencingProperty,
+//                                             sequencingOrder,
+//                                             pageSize);
         
-        return null;
+        List<TypeDef> supportedEntityDefs = oracleDataCatalogHelper
+                .getSupportedEntityTypeDefsFor(entityTypeGUID,
+                        entitySubtypeGUIDs);
+        
+        List<EntityDetail> result = new ArrayList<>();
+        
+        supportedEntityDefs.stream()
+                .map(typeDef -> oracleDataCatalogHelper.getQueryForEntityDef(typeDef))
+                .filter(Objects::nonNull)
+                .map(query -> {
+                    OracleDataCatalogQueryContext context = oracleDataCatalogHelper.createQueryContext();
+                    List<EntityDetail> queryResult = query.queryCatalog(context);
+                    return queryResult;
+                })
+                .forEachOrdered(queryResult -> {
+                    result.addAll(queryResult);
+                });
+        
+        return result;
     }
     
 }
