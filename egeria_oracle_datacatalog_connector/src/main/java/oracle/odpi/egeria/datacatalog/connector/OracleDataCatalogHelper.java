@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import oracle.odpi.egeria.datacatalog.connector.queries.DataAssetQuery;
 import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQuery;
-import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQueryContext;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogContext;
 
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
@@ -117,8 +117,8 @@ public final class OracleDataCatalogHelper {
         return typeDefName2QueryMap.get(typeDef.getName());
     }
     
-    public OracleDataCatalogQueryContext createQueryContext() {
-        return new OracleDataCatalogQueryContext(dataCatalogClient, catalogId);
+    public OracleDataCatalogContext createQueryContext() {
+        return new OracleDataCatalogContext(dataCatalogClient, catalogId);
     }
 
 }

@@ -7,5 +7,5 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
  *
  */
 public interface OracleDataCatalogQuery {
-    List<EntityDetail> queryCatalog(OracleDataCatalogQueryContext context);
+    List<EntityDetail> queryCatalog(OracleDataCatalogContext context);
 }

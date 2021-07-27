@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQuery;
-import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQueryContext;
+import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogContext;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.OMRSMetadataCollectionBase;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.SequencingOrder;
@@ -19,6 +19,8 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryConnector;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryValidator;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.EntityNotKnownException;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.EntityProxyOnlyException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.FunctionNotSupportedException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.InvalidParameterException;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.InvalidTypeDefException;
@@ -125,20 +127,20 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
     {
         final String  methodName                   = "findEntities";
 
-//        /*
-//         * Validate parameters
-//         */
-//        this.findEntitiesParameterValidation(userId,
-//                                             entityTypeGUID,
-//                                             entitySubtypeGUIDs,
-//                                             matchProperties,
-//                                             fromEntityElement,
-//                                             limitResultsByStatus,
-//                                             matchClassifications,
-//                                             asOfTime,
-//                                             sequencingProperty,
-//                                             sequencingOrder,
-//                                             pageSize);
+        /*
+         * Validate parameters
+         */
+        this.findEntitiesParameterValidation(userId,
+                                             entityTypeGUID,
+                                             entitySubtypeGUIDs,
+                                             matchProperties,
+                                             fromEntityElement,
+                                             limitResultsByStatus,
+                                             matchClassifications,
+                                             asOfTime,
+                                             sequencingProperty,
+                                             sequencingOrder,
+                                             pageSize);
         
         List<TypeDef> supportedEntityDefs = oracleDataCatalogHelper
                 .getSupportedEntityTypeDefsFor(entityTypeGUID,
@@ -150,7 +152,7 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
                 .map(typeDef -> oracleDataCatalogHelper.getQueryForEntityDef(typeDef))
                 .filter(Objects::nonNull)
                 .map(query -> {
-                    OracleDataCatalogQueryContext context = oracleDataCatalogHelper.createQueryContext();
+                    OracleDataCatalogContext context = oracleDataCatalogHelper.createQueryContext();
                     List<EntityDetail> queryResult = query.queryCatalog(context);
                     return queryResult;
                 })
@@ -161,4 +163,24 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
         return result;
     }
     
+    @Override
+    public EntityDetail getEntityDetail(
+            final String userId,
+            final String guid)
+            throws InvalidParameterException, RepositoryErrorException,
+                    EntityNotKnownException, EntityProxyOnlyException,
+                    UserNotAuthorizedException
+    {
+        final String  methodName        = "getEntityDetail";
+
+        /*
+         * Validate parameters
+         */
+        this.getInstanceParameterValidation(userId, guid, methodName);
+
+        /*
+         * Perform operation
+         */
+        return null;
+    }
 }

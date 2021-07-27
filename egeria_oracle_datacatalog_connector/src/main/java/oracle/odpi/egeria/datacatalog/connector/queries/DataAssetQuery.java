@@ -17,7 +17,7 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 public class DataAssetQuery implements OracleDataCatalogQuery {
 
     @Override
-    public List<EntityDetail> queryCatalog(final OracleDataCatalogQueryContext context) {
+    public List<EntityDetail> queryCatalog(final OracleDataCatalogContext context) {
         
         ListDataAssetsRequest request = ListDataAssetsRequest.builder()
                 .catalogId(context.getCatalogId())

@@ -5,13 +5,13 @@ import com.oracle.bmc.datacatalog.DataCatalogClient;
 /**
  *
  */
-public class OracleDataCatalogQueryContext {
+public class OracleDataCatalogContext {
     
     private final DataCatalogClient dataCatalogClient;
     
     private final String catalogId;
     
-    public OracleDataCatalogQueryContext(
+    public OracleDataCatalogContext(
             final DataCatalogClient dataCatalogClient,
             final String catalogId) {
         this.dataCatalogClient = dataCatalogClient;
