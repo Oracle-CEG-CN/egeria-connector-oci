@@ -9,14 +9,14 @@ and the [Oracle Data Catalog
 Types](https://docs.oracle.com/en-us/iaas/api/#/en/data-catalog/20190325/), or its [Java API Docs](https://docs.oracle.com/en-us/iaas/tools/java/1.36.5/com/oracle/bmc/datacatalog/model/package-summary.html).
 
 
-|Egeria Type         |ODC Type            |Comments            |Examples            |
-|--------------------|--------------------|--------------------|--------------------|
-|                    |Data Asset          |                    |database, filesystem|
-|                    |Folder              |                    |DB schema, directory|
-|Entity              |Entity              |                    |Table, File         |
-|                    |Attribute           |                    |Column, ...         |
-|Relationship        |                    |                    |                    |
-|Classification      |                    |                    |                    |
-|Glossary            |Glossary            |                    |                    |
-|GlossaryTerm        |Term                |                    |                    |
+At a starting point, we are going to map the information, which is harvested by Oracle Data Catalog 
+from a database.
+
+
+|Egeria Type           |ODC Type            |Comments            |Examples            |
+|----------------------|--------------------|--------------------|--------------------|
+|Database              |Data Asset          |                    |database, filesystem|
+|RelationalDBSchemaType|Folder              |                    |DB schema, directory|
+|RelationalTable       |Entity              |                    |Table, File         |
+|RelationalColumn      |Attribute           |                    |Column, ...         |
 
