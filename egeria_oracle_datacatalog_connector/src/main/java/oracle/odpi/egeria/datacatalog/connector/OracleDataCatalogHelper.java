@@ -1,5 +1,6 @@
 package oracle.odpi.egeria.datacatalog.connector;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +16,19 @@ import java.util.stream.Collectors;
 import oracle.odpi.egeria.datacatalog.connector.queries.DataAssetQuery;
 import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogQuery;
 import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogContext;
+import oracle.odpi.egeria.datacatalog.connector.queries.GenericDataCatalogClient;
+import oracle.odpi.egeria.datacatalog.connector.queries.GenericClientContext;
+
+import oracle.odpi.egeria.datacatalog.connector.mapper.DataAssetMapper;
+
 
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeErrorException;
+import oracle.odpi.egeria.datacatalog.connector.mapper.ODCEgeriaMapper;
+import oracle.odpi.egeria.datacatalog.connector.mapper.ODCEgeriaMapperRegistry;
+import oracle.odpi.egeria.datacatalog.connector.mapper.ODCTypeRegistry;
 
 /**
  *
@@ -34,6 +44,10 @@ public final class OracleDataCatalogHelper {
     private static final Map<String, OracleDataCatalogQuery> typeDefName2QueryMap;
 
     private static final Set<String> supportedEntityDefNames;
+    
+    private static final Map<String, String> guidTypeTemplateMap;
+    private final ODCEgeriaMapperRegistry odcEgeriaMapperRegistry;
+    private final ODCTypeRegistry odcTypeRegistry;
 
     static {
         supportedEntityDefNames = new HashSet<>();
@@ -44,9 +58,13 @@ public final class OracleDataCatalogHelper {
         
         typeDefName2QueryMap = new HashMap<>();
         typeDefName2QueryMap.put("Database", new DataAssetQuery());
+        
+        guidTypeTemplateMap = new HashMap<>();
+        guidTypeTemplateMap.put("data_asset", "dataAssets/%s");
     }
 
     private final DataCatalogClient dataCatalogClient;
+    private final GenericDataCatalogClient genericDataCatalogClient;
     private final String catalogId;
 
     private final OMRSRepositoryHelper repositoryHelper;
@@ -55,11 +73,18 @@ public final class OracleDataCatalogHelper {
 
     public OracleDataCatalogHelper(
             final DataCatalogClient dataCatalogClient,
+            final GenericDataCatalogClient genericDataCatalogClient,
             final String catalogId,
             final OMRSRepositoryHelper repositoryHelper) {
         this.dataCatalogClient = dataCatalogClient;
+        this.genericDataCatalogClient = genericDataCatalogClient;
         this.catalogId = catalogId;
         this.repositoryHelper = repositoryHelper;
+        
+        odcTypeRegistry = ODCTypeRegistry.fromCatalog(
+                genericDataCatalogClient,
+                catalogId);
+        odcEgeriaMapperRegistry = new ODCEgeriaMapperRegistry(odcTypeRegistry);
     }
 
     public boolean isSupportedEntityDef(final String typeName) {
@@ -119,6 +144,30 @@ public final class OracleDataCatalogHelper {
     
     public OracleDataCatalogContext createQueryContext() {
         return new OracleDataCatalogContext(dataCatalogClient, catalogId);
+    }
+    
+    private GenericClientContext clientContextFromGUID(final String guid) {
+        LOGGER.debug("clientContextFromGUID({})", guid);
+        String[] parts = guid.split("\\.");
+        
+        final String odcType = parts[0];
+        final String odcKey = parts[1];
+        
+        LOGGER.debug(" - odcType: {}  -  odcKey: {}", odcType, odcKey);
+        
+        final String template = guidTypeTemplateMap.get(odcType);
+        final ODCEgeriaMapper mapper = odcEgeriaMapperRegistry.getMapperFor(odcType);
+        
+        return new GenericClientContext(template, new Object[] {odcKey}, mapper);
+    }
+    
+    public EntityDetail loadEntityByGUID(final String guid) {
+        GenericClientContext clientContext = clientContextFromGUID(guid);
+        JsonNode jsonNode = genericDataCatalogClient.queryCatalog(
+                clientContext.getQueryTemplate(),
+                clientContext.getQueryArgs());
+                
+        return clientContext.getMapper().map(jsonNode);
     }
 
 }

@@ -8,6 +8,9 @@ import com.oracle.bmc.auth.StringPrivateKeySupplier;
 
 import com.oracle.bmc.http.signing.DefaultRequestSigner;
 import com.oracle.bmc.http.signing.RequestSigner;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 import java.net.URI;
 
@@ -15,10 +18,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.net.ssl.SSLException;
+import org.springframework.http.HttpHeaders;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 /**
  *
@@ -54,6 +63,19 @@ public final class GenericDataCatalogClient {
         return String.format(BASE_URL_TEMPLATE, region, catalogId);
     }
     
+    private WebClient createWebClient() {
+        try {
+            SslContext sslContext = SslContextBuilder
+                    .forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .build();
+            HttpClient httpClient = HttpClient.create().secure(t -> t.sslContext(sslContext));
+            return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+        } catch (SSLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     public JsonNode queryCatalog(final String queryTemplate, final Object[] templateArgs) {
         StringPrivateKeySupplier privateKeySupplier = new StringPrivateKeySupplier(privateKey);
         
@@ -68,9 +90,8 @@ public final class GenericDataCatalogClient {
         RequestSigner requestSigner;
         requestSigner = DefaultRequestSigner.createRequestSigner(provider);
         
-        WebClient client = WebClient.create();
-        
-        
+        WebClient client = createWebClient();
+
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Accept", Arrays.asList(MediaType.APPLICATION_JSON_VALUE));
         
@@ -84,10 +105,10 @@ public final class GenericDataCatalogClient {
         JsonNode result = client.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headersConsumer -> {
-                    for (String key : signatureHeaders.keySet()) {
+                .headers((HttpHeaders headersConsumer) -> {
+                    signatureHeaders.keySet().forEach(key -> {
                         headersConsumer.add(key, signatureHeaders.get(key));
-                    }
+                    });
                 })
                 .retrieve()
                 .bodyToMono(JsonNode.class)

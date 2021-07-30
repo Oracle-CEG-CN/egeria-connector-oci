@@ -1,24 +1,28 @@
 package oracle.odpi.egeria.datacatalog.connector;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import com.oracle.bmc.ConfigFileReader;
+
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.SimpleAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.SimplePrivateKeySupplier;
-import com.oracle.bmc.auth.StringPrivateKeySupplier;
+
 import com.oracle.bmc.http.signing.DefaultRequestSigner;
 import com.oracle.bmc.http.signing.RequestSigner;
+
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import org.assertj.core.util.Arrays;
+
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.MediaType;
+
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -52,13 +56,12 @@ public class WebClientWithODCSigningTest {
         WebClient client = WebClient.create();
         
         Map<String, List<String>> headers = new HashMap<>();
-        List<String> acceptHeader = new ArrayList<>();
-        headers.put("Accept", Collections.singletonList(MediaType.APPLICATION_JSON_VALUE));
+        headers.put("Accept", Arrays.asList(MediaType.APPLICATION_JSON_VALUE));
         
         Map<String, String> signatureHeaders = requestSigner.signRequest(
                 DATA_ASSET_URI, "GET", headers, null);
         
-        String content = client.get()
+        JsonNode content = client.get()
                 .uri(DATA_ASSET_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .headers(headersConsumer -> {
@@ -67,8 +70,10 @@ public class WebClientWithODCSigningTest {
                     }
                 })
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(JsonNode.class)
                 .block();
+        
+        
         
         System.out.println(content);
         

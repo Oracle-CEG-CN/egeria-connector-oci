@@ -181,6 +181,6 @@ public class OracleDataCatalogOMRSMetadataCollection extends OMRSMetadataCollect
         /*
          * Perform operation
          */
-        return null;
+        return oracleDataCatalogHelper.loadEntityByGUID(guid);
     }
 }

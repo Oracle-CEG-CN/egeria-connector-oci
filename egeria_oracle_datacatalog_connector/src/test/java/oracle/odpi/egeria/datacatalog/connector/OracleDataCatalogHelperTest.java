@@ -42,6 +42,7 @@ public class OracleDataCatalogHelperTest {
     public void setUp() throws Exception {
         oracleDataCatalogHelper = new OracleDataCatalogHelper(
                 dataCatalogClient,
+                null,
                 "OracleDataCatalogHelperTest",
                 omrsRepositoryHelper);
         oracleDataCatalogHelper.registerTypeDef(createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-Database", "Database"));
