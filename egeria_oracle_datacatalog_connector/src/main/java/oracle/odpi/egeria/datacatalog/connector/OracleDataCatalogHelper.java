@@ -28,6 +28,7 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeErrorException;
 import oracle.odpi.egeria.datacatalog.connector.mapper.ODCEgeriaMapper;
 import oracle.odpi.egeria.datacatalog.connector.mapper.ODCEgeriaMapperRegistry;
+import oracle.odpi.egeria.datacatalog.connector.mapper.ODCEntityGuid;
 import oracle.odpi.egeria.datacatalog.connector.mapper.ODCTypeRegistry;
 
 /**
@@ -63,6 +64,7 @@ public final class OracleDataCatalogHelper {
         guidTypeTemplateMap.put("data_asset", "dataAssets/%s");
     }
 
+    private final String metadataCollectionId;
     private final DataCatalogClient dataCatalogClient;
     private final GenericDataCatalogClient genericDataCatalogClient;
     private final String catalogId;
@@ -72,19 +74,28 @@ public final class OracleDataCatalogHelper {
     private final Map<String, TypeDef> registeredTypeDefs = new HashMap<>();
 
     public OracleDataCatalogHelper(
+            final String metadataCollectionId,
             final DataCatalogClient dataCatalogClient,
             final GenericDataCatalogClient genericDataCatalogClient,
             final String catalogId,
             final OMRSRepositoryHelper repositoryHelper) {
+        this.metadataCollectionId = metadataCollectionId;
         this.dataCatalogClient = dataCatalogClient;
         this.genericDataCatalogClient = genericDataCatalogClient;
         this.catalogId = catalogId;
         this.repositoryHelper = repositoryHelper;
         
+        LOGGER.debug("OracleDataCatalogHelper() initializing odcTypeRegistry ...");
         odcTypeRegistry = ODCTypeRegistry.fromCatalog(
                 genericDataCatalogClient,
                 catalogId);
-        odcEgeriaMapperRegistry = new ODCEgeriaMapperRegistry(odcTypeRegistry);
+        LOGGER.debug("OracleDataCatalogHelper() initializing odcTypeRegistry ... done.");
+
+        
+        odcEgeriaMapperRegistry = new ODCEgeriaMapperRegistry(
+                odcTypeRegistry,
+                repositoryHelper,
+                metadataCollectionId);
     }
 
     public boolean isSupportedEntityDef(final String typeName) {
@@ -148,26 +159,28 @@ public final class OracleDataCatalogHelper {
     
     private GenericClientContext clientContextFromGUID(final String guid) {
         LOGGER.debug("clientContextFromGUID({})", guid);
-        String[] parts = guid.split("\\.");
         
-        final String odcType = parts[0];
-        final String odcKey = parts[1];
+        ODCEntityGuid odcEntityGuid = ODCEntityGuid.fromOMRSGuid(guid);
         
-        LOGGER.debug(" - odcType: {}  -  odcKey: {}", odcType, odcKey);
-        
-        final String template = guidTypeTemplateMap.get(odcType);
-        final ODCEgeriaMapper mapper = odcEgeriaMapperRegistry.getMapperFor(odcType);
-        
-        return new GenericClientContext(template, new Object[] {odcKey}, mapper);
+        if ((odcEntityGuid != null) && (metadataCollectionId.equals(odcEntityGuid.getMetadataCollectionId()))) {
+            final String template = guidTypeTemplateMap.get(odcEntityGuid.getOdcTypeKey());
+            final ODCEgeriaMapper mapper = odcEgeriaMapperRegistry.getMapperFor(odcEntityGuid.getOdcTypeKey());
+
+            return new GenericClientContext(template, new Object[] {odcEntityGuid.getOdcKey()}, mapper);
+        }
+        return null;
     }
     
     public EntityDetail loadEntityByGUID(final String guid) {
         GenericClientContext clientContext = clientContextFromGUID(guid);
-        JsonNode jsonNode = genericDataCatalogClient.queryCatalog(
-                clientContext.getQueryTemplate(),
-                clientContext.getQueryArgs());
-                
-        return clientContext.getMapper().map(jsonNode);
+        if (clientContext != null) {
+            JsonNode jsonNode = genericDataCatalogClient.queryCatalog(
+                    clientContext.getQueryTemplate(),
+                    clientContext.getQueryArgs());
+
+            return clientContext.getMapper().map(jsonNode);
+        }
+        return null;
     }
 
 }

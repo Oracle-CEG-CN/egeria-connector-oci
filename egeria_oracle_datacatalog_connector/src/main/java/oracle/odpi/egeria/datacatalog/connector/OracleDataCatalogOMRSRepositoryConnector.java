@@ -197,6 +197,7 @@ public class OracleDataCatalogOMRSRepositoryConnector
                     repositoryValidator,
                     metadataCollectionId,
                     new OracleDataCatalogHelper(
+                            metadataCollectionId,
                             dataCatalogClient,
                             genericDataCatalogClient,
                             catalogId,

@@ -11,6 +11,7 @@ import java.util.List;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import oracle.odpi.egeria.datacatalog.connector.queries.GenericDataCatalogClient;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -27,6 +28,9 @@ public class OracleDataCatalogHelperTest {
     private DataCatalogClient dataCatalogClient;
     
     @Injectable
+    private GenericDataCatalogClient genericDataCatalogClient;
+    
+    @Injectable
     private OMRSRepositoryHelper omrsRepositoryHelper;
     
     private OracleDataCatalogHelper oracleDataCatalogHelper;
@@ -41,8 +45,9 @@ public class OracleDataCatalogHelperTest {
     @Before
     public void setUp() throws Exception {
         oracleDataCatalogHelper = new OracleDataCatalogHelper(
+                "eine-metadata-collection-id",
                 dataCatalogClient,
-                null,
+                genericDataCatalogClient,
                 "OracleDataCatalogHelperTest",
                 omrsRepositoryHelper);
         oracleDataCatalogHelper.registerTypeDef(createTypeDef(TypeDefCategory.ENTITY_DEF, "guid-Database", "Database"));

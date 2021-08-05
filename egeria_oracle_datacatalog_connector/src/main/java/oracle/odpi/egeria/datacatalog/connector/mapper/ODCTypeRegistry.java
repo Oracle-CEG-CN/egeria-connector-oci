@@ -4,12 +4,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;
 import oracle.odpi.egeria.datacatalog.connector.queries.GenericDataCatalogClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a mapping between <b>ODC</b> type-keys and the type information from
  * <b>ODC</b> represented as {@code JsonNode} instances.
  */
 public final class ODCTypeRegistry {
+    
+    /**
+     * Used for logging.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            ODCTypeRegistry.class);
 
     /**
      * Maps type keys to {@code JsonNode} instances.
@@ -39,8 +47,9 @@ public final class ODCTypeRegistry {
     public static ODCTypeRegistry fromCatalog(
             final GenericDataCatalogClient client, final String catalogId) {
         Map<String, JsonNode> resultMap = new HashMap<>();
-        JsonNode types = client.queryCatalog("catalog/%s/types",
-                new Object[]{catalogId});
+        LOGGER.debug("ODCTypeRegistry.fromCatalog(...) retrieving types ...");
+        JsonNode types = client.queryCatalog("types", new Object[]{});
+        LOGGER.debug("ODCTypeRegistry.fromCatalog(...) retrieving types ... done.");
         types.get("items").elements().forEachRemaining((JsonNode type) -> {
             resultMap.put(type.get("key").asText(), type);
         });

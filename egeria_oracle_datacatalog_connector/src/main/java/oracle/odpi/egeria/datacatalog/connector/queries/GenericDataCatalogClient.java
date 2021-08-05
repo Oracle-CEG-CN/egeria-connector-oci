@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,6 +37,9 @@ import reactor.netty.http.client.HttpClient;
  *
  */
 public final class GenericDataCatalogClient {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+            GenericDataCatalogClient.class);
 
     private static final String BASE_URL_TEMPLATE
             = "https://datacatalog.%s.oci.oraclecloud.com/20190325/catalogs/%s";
@@ -107,6 +112,8 @@ public final class GenericDataCatalogClient {
 
         Map<String, String> signatureHeaders = requestSigner.signRequest(
                 uri, "GET", headers, null);
+        
+        LOGGER.debug("queryCatalog(...) - uri: {}", uri);
 
         JsonNode result = client.get()
                 .uri(uri)
