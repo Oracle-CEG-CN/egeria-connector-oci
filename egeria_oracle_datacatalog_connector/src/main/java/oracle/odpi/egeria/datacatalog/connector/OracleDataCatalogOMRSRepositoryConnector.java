@@ -12,7 +12,6 @@ import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollec
 
 import java.util.Map;
 import oracle.odpi.egeria.datacatalog.connector.queries.GenericDataCatalogClient;
-import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

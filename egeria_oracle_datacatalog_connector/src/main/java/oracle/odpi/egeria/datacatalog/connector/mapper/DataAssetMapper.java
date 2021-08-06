@@ -1,8 +1,7 @@
 package oracle.odpi.egeria.datacatalog.connector.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProvenanceType;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryconnector.OMRSRepositoryHelper;

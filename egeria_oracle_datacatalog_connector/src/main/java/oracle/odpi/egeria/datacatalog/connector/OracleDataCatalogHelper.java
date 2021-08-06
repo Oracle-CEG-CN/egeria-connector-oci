@@ -19,7 +19,6 @@ import oracle.odpi.egeria.datacatalog.connector.queries.OracleDataCatalogContext
 import oracle.odpi.egeria.datacatalog.connector.queries.GenericDataCatalogClient;
 import oracle.odpi.egeria.datacatalog.connector.queries.GenericClientContext;
 
-import oracle.odpi.egeria.datacatalog.connector.mapper.DataAssetMapper;
 
 
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
