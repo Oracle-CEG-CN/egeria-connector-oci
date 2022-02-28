@@ -1,0 +1,1 @@
+curl --insecure --request GET https://localhost:9443/servers/oracle-datacatalog-proxy/open-metadata/repository-services/users/nonsense/types/all

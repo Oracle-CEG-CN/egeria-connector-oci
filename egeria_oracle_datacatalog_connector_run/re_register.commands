@@ -1,0 +1,5 @@
+set_server_type
+register_connector
+start_connector
+exit
+

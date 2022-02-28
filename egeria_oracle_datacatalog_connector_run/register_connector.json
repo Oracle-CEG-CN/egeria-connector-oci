@@ -1,0 +1,7 @@
+{
+    "class": "Connection",
+    "connectorType": {
+        "class": "ConnectorType",
+        "connectorProviderClassName": "oracle.odpi.egeria.datacatalog.connector.OracleDataCatalogOMRSRepositoryConnectorProvider"
+    }
+}
